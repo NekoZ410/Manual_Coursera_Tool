@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>coursera-manual-extension</title>
+        <style>
+            body {
+                padding: 10px;
+                margin: 10px;
+                font-family: consolas;
+                text-align: center;
+                border: 1px solid whitesmoke;
+                color: whitesmoke;
+                background-color: rgba(27, 27, 35, 1);
+                width: fit-content;
+                min-width: 525px;
+            }
+
+            .infoURL {
+                text-decoration: none;
+                color: inherit;
+            }
+
+            h3 {
+                margin: 5px 0;
+                text-align: left;
+            }
+
+            #apiKeyInput,
+            #modelNameInput,
+            #intervalTimeInput {
+                width: 80%;
+                padding: 8px;
+                box-sizing: border-box;
+            }
+
+            #saveBtn,
+            #solveBtn {
+                width: 100%;
+                padding: 8px;
+                color: white;
+                border: none;
+                cursor: pointer;
+                margin-bottom: 5px;
+            }
+
+            #saveBtn {
+                background: dodgerblue;
+            }
+
+            #saveBtn:hover {
+                background: royalblue;
+            }
+
+            #solveBtn {
+                background-color: forestgreen;
+            }
+
+            #solveBtn:hover {
+                background-color: darkgreen;
+            }
+
+            #status {
+                margin: 10px 0 0 0;
+                color: green;
+            }
+
+            #modelInfoDisplay {
+                text-align: left;
+                font-size: 12px;
+                background: #222;
+                padding: 10px;
+                border-radius: 5px;
+                margin-top: 10px;
+                white-space: pre-wrap;
+                color: #cfcfcf;
+                display: none;
+                /* Hidden by default */
+            }
+        </style>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="info">
+                <a href="https://github.com/NekoZ410/coursera-manual-extension" class="infoURL">
+                    <h2 class="name" style="margin: 10px 0">
+                        coursera-manual-extension v<span id="version"></span>
+                        <i class="fa-brands fa-github"></i>
+                    </h2>
+                </a>
+            </div>
+            <hr />
+
+            <h3>
+                Gemini API Key:
+                <button type="button" id="apiKeyInstructionsBtn"
+                    title="Click here to redirect > Click 'Create API key' > Name your key > Choose project/Create a new one > Cick 'Create key' > Click 'Copy API key'">
+                    Hover for instructions
+                </button>
+            </h3>
+            <input id="apiKeyInput" placeholder="Paste key here..." />
+            <h3>
+                Model Name:
+                <button type="button" id="modelInstructionsBtn"
+                    title="Click here to redirect > Click 'All models' to show all models > Copy your desired model name">
+                    Hover for instructions
+                </button>
+            </h3>
+            <input id="modelNameInput" placeholder="e.g., gemini-2.0-flash-lite" />
+
+            <h3>Request Interval (ms): </h3>
+            <input id="intervalTimeInput" type="number" placeholder="2500" value="2500" />
+            <hr />
+
+            <button id="saveBtn">Save configurations</button>
+            <button id="solveBtn">Solve quizzes</button>
+            <h3 id="status"></h3>
+            <div id="modelInfoDisplay"></div>
+        </div>
+
+        <script src="popup.js"></script>
+    </body>
+
+</html>
