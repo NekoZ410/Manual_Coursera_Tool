@@ -1,12 +1,27 @@
-// global: display version from manifest
-function displayVersion() {
-    const versionEl = document.getElementById("version");
-    if (versionEl) {
-        const manifest = chrome.runtime.getManifest();
-        versionEl.textContent = manifest.version;
+// global: display info from manifest
+(function() {
+    // global: display info from manifest
+    const manifest = chrome.runtime.getManifest(); // get manifest object
+
+    // get extension version
+    const versionElement = document.getElementById("ext-ver");
+    if (versionElement) {
+        versionElement.textContent = manifest.version;
     }
-}
-displayVersion();
+
+    // get extension name
+    const nameElement = document.getElementById("ext-name");
+    if (nameElement) {
+        nameElement.textContent = manifest.name;
+    }
+    document.title = manifest.name; // set HTML title
+
+    // get extension repository URL
+    const repoLink = document.getElementById("ext-repo");
+    if (repoLink && manifest.homepage_url) {
+        repoLink.href = manifest.homepage_url;
+    }
+})();
 
 // global: configuration saving and loading
 document.addEventListener("DOMContentLoaded", () => {

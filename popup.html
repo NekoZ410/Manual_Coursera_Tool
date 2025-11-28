@@ -4,8 +4,9 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Manual Coursera Tool</title>
+        <title>(Extension Name)</title>
         <style>
+            /* core: body */
             body {
                 padding: 10px;
                 margin: 10px;
@@ -15,12 +16,69 @@
                 color: whitesmoke;
                 background-color: rgba(27, 27, 35, 1);
                 width: fit-content;
-                min-width: 525px;
+                min-width: 600px;
             }
 
-            .infoURL {
+            /* core: info */
+            .info h2 {
+                margin: 10px 0;
+            }
+
+            .info h2 a {
                 text-decoration: none;
                 color: inherit;
+            }
+
+            /* core: groups */
+            .groups {
+                /* max-height: 600px; */
+                overflow-y: auto;
+            }
+
+            .groups::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            .groups::-webkit-scrollbar-thumb {
+                background-color: gray;
+            }
+
+            .groups::-webkit-scrollbar-thumb:hover {
+                background-color: lightgray;
+            }
+
+            /* core: group */
+            .group {
+                flex-direction: column;
+                gap: 8px;
+                margin: 0 0 10px 0;
+                text-align: left;
+                display: flex;
+            }
+
+            /* group: type */
+            .type {
+                margin: 0.5em 2em;
+            }
+
+            /* group: label (for each option) */
+            label {
+                font-size: 15px;
+                width: fit-content;
+            }
+
+            /* group: input */
+            input[type="text"],
+            input[type="number"] {
+                vertical-align: middle;
+                width: 50px;
+                height: 20px;
+            }
+
+            input[type="color"] {
+                vertical-align: middle;
+                width: 30px;
+                height: 30px;
             }
 
             h3 {
@@ -77,7 +135,6 @@
                 white-space: pre-wrap;
                 color: #cfcfcf;
                 display: none;
-                /* Hidden by default */
             }
         </style>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
@@ -86,12 +143,10 @@
     <body>
         <div class="container">
             <div class="info">
-                <a href="https://github.com/NekoZ410/Manual-Coursera-Tool" class="infoURL">
-                    <h2 class="name" style="margin: 10px 0">
-                        Manual Coursera Tool v<span id="version"></span>
-                        <i class="fa-brands fa-github"></i>
-                    </h2>
-                </a>
+                <h2>
+                    <span id="ext-name">(Extension Name)</span> v<span id="ext-ver">(Extension Version)</span>
+                    <a id="ext-repo" href="#" target="_blank"><i class="fa-brands fa-github"></i></a>
+                </h2>
             </div>
             <hr />
 
