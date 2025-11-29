@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Manual Coursera Tool",
-    "version": "1.1.0",
+    "version": "1.1.3",
     "description": "Manual tool to complete Coursera quizzes when your other automation tools not working :)))))",
     "permissions": ["activeTab", "scripting", "storage"],
     "homepage_url": "https://github.com/NekoZ410/Manual_Coursera_Tool",

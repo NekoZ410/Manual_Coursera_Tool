@@ -26,7 +26,7 @@ function getCleanText(element) {
 
 // global: Gemini API call
 async function callGeminiAPI(question, answers, apiKey, modelName, targetElement, questionType, avoidAnswer = null) {
-    let uiContainer = targetElement.querySelector(".csr-manual-guess-container");
+    let uiContainer = targetElement.querySelector(".manual-coursera-tool-container");
     if (uiContainer) {
         const errorP = uiContainer.querySelector(".gemini-error-paragraph");
         const successP = uiContainer.querySelector(".gemini-success-paragraph");
@@ -135,7 +135,7 @@ async function callGeminiAPI(question, answers, apiKey, modelName, targetElement
 
 // global: inject or update result UI
 function injectOrUpdateResultUI(targetElement, resultText, question, answers, apiKey, modelName, errorMessage = null) {
-    let container = targetElement.querySelector(".csr-manual-guess-container");
+    let container = targetElement.querySelector(".manual-coursera-tool-container");
 
     if (!container) {
         container = document.createElement("div");
@@ -291,7 +291,7 @@ async function processQuizzes(mainQuizContainer, apiKey, modelName, intervalTime
         const targetInjectionBlock = quizEl.querySelector(SELECTORS.INJECTION_POINT);
 
         // check if already answered
-        if (targetInjectionBlock.querySelector(".csr-manual-guess-container")) {
+        if (targetInjectionBlock.querySelector(".manual-coursera-tool-container")) {
             console.log(`Question #${index + 1} already answered. Skipping.`);
             continue;
         }
