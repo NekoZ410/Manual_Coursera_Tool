@@ -11,7 +11,7 @@ Manual Coursera Tool to complete quizzes when your other automation tools not wo
 
 ## Setup
 1. Create and get Gemini API key from [Google AI Studio](https://aistudio.google.com/api-keys).
-2. Get unlocked version of `coursera_locking_browser` from [Pear104/coursera-tool](https://github.com/Pear104/coursera-tool), extract and put inner folder to `AppData/Local`
+2. Get unlocked version of `coursera_locking_browser` from [Pear104/coursera-tool/releases](https://github.com/Pear104/coursera-tool/releases), extract and put inner folder to `AppData/Local`
 3. Open `coursera_locking_browser.exe` first time to initialize.
 
 ## ~~Usage (deprecated)~~
@@ -23,7 +23,10 @@ Manual Coursera Tool to complete quizzes when your other automation tools not wo
 1. Open quiz page, start, open `coursera_locking_browser` from prompt, or launch manually (Do not download and run from Coursera, it will overwrite the unlocked version and make you locked).
 2. First time, unlocked version will ask for Gemini API key to automatically solve the quiz, enter your API key and click OK.
 3. Second time and afterwards, unlocked version will automatically solve all the quizzes.
-4. If quizzes not automatically solved: Press F12, copy script from [csr_manual_scripts.js](https://github.com/NekoZ410/Manual_Coursera_Tool/blob/main/csr_manual_scripts.js) in my repo, paste in `Console` tab, enter your Gemini API key, then press Enter. Use `Copy All Quizzes` button to copy all the quizzes if not believe in prompt responses, and use `Reload Page` to refresh the page. 
+4. If quizzes not automatically solved: Press F12, copy script from [csr_manual_scripts.js](https://github.com/NekoZ410/Manual_Coursera_Tool/blob/main/csr_manual_scripts.js) in my repo, paste in `Console` tab, enter your Gemini API key, then press Enter. Use `Copy All Quizzes` button to copy all the quizzes if not believe in prompt responses, and use `Reload Page` to refresh the page.
+
+## Credits
+- [Pear104/coursera-tool](https://github.com/Pear104/coursera-tool)
 
 ## Disclaimer
 > I am not responsible for any incorrect answers, repeated failed attempts that lead to exhaustion of retry attempts within a period of time, cases of cheating detection that lead to account suspension and legal issues that arise.
