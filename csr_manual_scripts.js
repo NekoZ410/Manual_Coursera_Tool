@@ -1,10 +1,16 @@
-(async function () {
-    // configs
-    const API_KEY = "";
-    const MODEL_NAME = "gemini-2.5-flash"; // only change if limit reached
-    const BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}?key=${API_KEY}`;
-    const GENERATE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${API_KEY}`;
-    const GENERATION_CONFIG = { temperature: 0.0, maxOutputTokens: 8192, topP: 0.9, topK: 40 };
+/**
+ * Main Solver Function
+ * @param {string} apiKey - Google Gemini API Key, get from https://aistudio.google.com/api-keys
+ * @param {string} modelName - Model name (Ex: gemini-2.5-flash), view model available at https://aistudio.google.com/usage?timeRange=last-1-day&tab=rate-limit
+ * @param {object} generationConfig - Generation configs
+ */
+async function runGeminiQuizSolver(apiKey, modelName, generationConfig) {
+    // default configs
+    const BASE_URL_V1BETA = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}?key=${apiKey}`;
+    const GENERATE_URL_V1BETA = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+    const BASE_URL_V1 = `https://generativelanguage.googleapis.com/v1/models/${modelName}?key=${apiKey}`;
+    const GENERATE_URL_V1 = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`;
+
     const SAFETY_SETTINGS = [
         { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
         { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_LOW_AND_ABOVE" },
@@ -19,27 +25,47 @@
         TARGET: ".css-gri5r8",
     };
 
-    // test API
+    let activeGenerateUrl = null; // works endpoint
+
+    // test API config
     async function testConfig() {
         console.log("Checking API configuration...");
-        try {
-            const response = await fetch(BASE_URL);
-            const data = await response.json();
-            if (response.ok) {
-                console.log("✅ Configuration valid:", data.displayName || MODEL_NAME);
-                return true;
-            } else {
-                console.error("❌ Configuration invalid:", data.error?.message || "Unknown error");
-                alert(`API Error: ${data.error?.message || "Please check your API_KEY/MODEL_NAME."}`);
+
+        const checkUrl = async (url, type) => {
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (response.ok) {
+                    console.log(`✅ Configuration valid (${type}):`, data.displayName || modelName);
+                    return true;
+                }
+                return false;
+            } catch (error) {
                 return false;
             }
-        } catch (error) {
-            console.error("❌ Connection error:", error.message);
-            return false;
+        };
+
+        // test v1beta branch
+        if (await checkUrl(BASE_URL_V1BETA, "v1beta")) {
+            activeGenerateUrl = GENERATE_URL_V1BETA;
+            return true;
         }
+
+        console.warn("⚠️ v1beta failed, trying v1...");
+
+        // test v1 branch
+        if (await checkUrl(BASE_URL_V1, "v1")) {
+            activeGenerateUrl = GENERATE_URL_V1;
+            return true;
+        }
+
+        // all failed
+        console.error("❌ All API endpoints failed.");
+        alert("API Error: Could not connect to Gemini API (checked both v1beta and v1). Please check your API Key and Model Name.");
+        return false;
     }
 
-    // data processing
+    // extract data
     function extractDataFromBlock(block) {
         const qText = block.querySelector(SEL.Q_TEXT)?.textContent.replace(/\s+/g, " ").trim();
         const ansContainer = block.querySelector(SEL.ANSWERS);
@@ -57,7 +83,7 @@
         return { qText, answers, typeRaw, typeLabel };
     }
 
-    // inject control button
+    // inject control buttons
     function injectControlButtons() {
         const containerId = "gemini-controls-container";
         const oldContainer = document.getElementById(containerId);
@@ -68,7 +94,7 @@
         container.style.cssText = "position: fixed; bottom: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;";
         const btnStyle = `padding: 12px 20px; color: white; border: none; border-radius: 8px; cursor: pointer; font-family: sans-serif; font-weight: bold; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.2s;`;
 
-        // button copy all
+        // button copy all quizzes
         const copyBtn = document.createElement("button");
         copyBtn.innerText = "Copy All Quizzes";
         copyBtn.style.cssText = btnStyle + "background: #0056b3;";
@@ -110,9 +136,11 @@
         document.body.appendChild(container);
     }
 
-    // gemini prompt, batch questions
+    // prompt gemini
     async function callGeminiBatch(questionsData) {
-        const instructionPrompt = ` You are a UX/UI expert and exam solver. I will provide a JSON array of questions. Your task is to analyze each question and select the correct option(s) from the provided "options" list. 
+        if (!activeGenerateUrl) return { error: "No active API URL found." };
+
+        const instructionPrompt = `You are a UX/UI expert and exam solver. I will provide a JSON array of questions. Your task is to analyze each question and select the correct option(s) from the provided "options" list. 
         **Requirements:**
             1. Return ONLY a valid JSON array. No Markdown formatting (like \`\`\`json), no explanations.
             2. The output JSON must strictly follow this structure:
@@ -124,6 +152,7 @@
             3. For "radio" type, "correct_option" is a single string.
             4. For "checkbox" type, "correct_option" is an array of strings.
             5. The content of "correct_option" must MATCH EXACTLY with one of the provided options.`;
+
         const dataPrompt = `Here is the data:\n${JSON.stringify(questionsData, null, 2)}`;
 
         const requestBody = {
@@ -132,13 +161,13 @@
                 { role: "user", parts: [{ text: dataPrompt }] },
             ],
             tools: [{ googleSearch: {} }],
-            generationConfig: GENERATION_CONFIG,
+            generationConfig: generationConfig,
             safetySettings: SAFETY_SETTINGS,
         };
 
         try {
-            console.log("Sending batch request to Gemini...");
-            const response = await fetch(GENERATE_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(requestBody) });
+            console.log("Sending batch request to Gemini...", activeGenerateUrl);
+            const response = await fetch(activeGenerateUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(requestBody) });
             const data = await response.json();
             if (data.error) return { error: `API Error: ${data.error.message}` };
 
@@ -176,7 +205,6 @@
             ui.style.backgroundColor = "#ffe6e6";
             ui.style.border = "1px solid red";
         } else {
-            // handle array
             const answerText = Array.isArray(result) ? result.join("; ") : result;
             ui.innerHTML = `<strong>Answer:</strong> ${answerText}`;
             ui.style.color = "darkgreen";
@@ -185,7 +213,7 @@
         }
     }
 
-    // main execution process
+    // main process
     // test config
     const isConfigValid = await testConfig();
     if (!isConfigValid) {
@@ -202,7 +230,6 @@
 
     const questionsData = [];
 
-    // extract data
     blocks.forEach((block, index) => {
         const target = block.querySelector(SEL.TARGET);
         if (!target) return;
@@ -212,7 +239,6 @@
         ui.style.cssText = "margin-top:8px; padding:8px; background:#f0f0f0; border-radius:4px; font-family:sans-serif; font-size:14px; color:#666;";
         ui.innerText = "⏳ Adding to batch queue...";
 
-        // remove old ui if exists
         const oldUi = target.querySelector(".gemini-result-ui");
         if (oldUi) oldUi.remove();
         target.appendChild(ui);
@@ -220,7 +246,7 @@
         const data = extractDataFromBlock(block);
         if (data) {
             questionsData.push({
-                index: index + 1, // 1-based index
+                index: index + 1,
                 question: data.qText,
                 type: data.typeRaw,
                 options: data.answers,
@@ -236,7 +262,7 @@
         return;
     }
 
-    // batch process prompts
+    // prompt gemini
     console.log("Payload:", questionsData);
     const batchResult = await callGeminiBatch(questionsData);
 
@@ -248,7 +274,6 @@
         });
     } else if (Array.isArray(batchResult)) {
         console.log("Batch Response:", batchResult);
-
         batchResult.forEach((item) => {
             const blockIndex = item.index - 1;
             if (blocks[blockIndex]) {
@@ -260,4 +285,7 @@
     } else {
         console.error("Unexpected response format:", batchResult);
     }
-})();
+}
+
+// execute
+runGeminiQuizSolver("api key here", "gemini-2.5-flash", { temperature: 0.0, maxOutputTokens: 8192, topP: 0.9, topK: 40 });
