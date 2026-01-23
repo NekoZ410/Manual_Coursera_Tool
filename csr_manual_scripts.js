@@ -140,7 +140,7 @@ async function runGeminiQuizSolver(apiKey, modelName, generationConfig) {
     async function callGeminiBatch(questionsData) {
         if (!activeGenerateUrl) return { error: "No active API URL found." };
 
-        const instructionPrompt = `You are a UX/UI expert and exam solver. I will provide a JSON array of questions. Your task is to analyze each question and select the correct option(s) from the provided "options" list. 
+        const instructionPrompt = `You are an expert test and exam solver. I will provide a JSON array of questions. Your task is to analyze each question and select the correct option(s) from the provided "options" list. 
         **Requirements:**
             1. Return ONLY a valid JSON array. No Markdown formatting (like \`\`\`json), no explanations.
             2. The output JSON must strictly follow this structure:
